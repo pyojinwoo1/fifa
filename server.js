@@ -5,6 +5,7 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 const port = 3001;
+const path = require('path');
 
 const NEXON_API_KEY = process.env.NEXON_API_KEY;
 if (!NEXON_API_KEY) {
@@ -104,6 +105,20 @@ app.get('/api/spid-meta', async (req, res) => {
     res.status(500).json({ error: 'spid.json을 불러올 수 없습니다.' });
   }
 });
+
+app.get('/api/player-image/:spid', async (req, res) => {
+  const { spid } = req.params;
+  const url = `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${spid}.png`;
+  try {
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    res.set('Content-Type', 'image/png');
+    res.send(response.data);
+  } catch (e) {
+    // 넥슨 이미지가 없거나 에러가 나면 fallback 이미지 반환
+    res.status(404).sendFile(path.join(__dirname, 'public', 'fallback-player.png'));
+  }
+});
+
 
 // 6. 포지션 메타데이터
 app.get('/api/spposition-meta', async (req, res) => {

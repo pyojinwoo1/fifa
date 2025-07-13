@@ -1,5 +1,3 @@
-// src/components/SquadVisualizer.jsx
-
 import React, { useState, useEffect } from "react";
 import {
   fetchMatchHistory,
@@ -13,8 +11,7 @@ import 축구장 from "../assets/축구장.png";
 
 // 포지션별 겹치지 않는 축구장 내 위치 (SUB 제외)
 const gridLayout = {
-  // 공격수
-  ST:   { row: 1, col: 4 }, // 최상단
+  ST:   { row: 1, col: 4 },
   CF:   { row: 2, col: 4 },
   RF:   { row: 2, col: 5 },
   LF:   { row: 2, col: 3 },
@@ -22,44 +19,45 @@ const gridLayout = {
   LS:   { row: 2, col: 3 },
   RW:   { row: 2, col: 7 },
   LW:   { row: 2, col: 1 },
-
-  // 공격형 미드필더
   CAM:  { row: 3, col: 4 },
   RAM:  { row: 3, col: 5 },
   LAM:  { row: 3, col: 3 },
-
-  // 일반 미드필더
   RM:   { row: 4, col: 7 },
   RCM:  { row: 4, col: 5 },
   CM:   { row: 4, col: 4 },
   LCM:  { row: 4, col: 3 },
   LM:   { row: 4, col: 1 },
-
-  // 수비형 미드필더
   CDM:  { row: 5, col: 4 },
   RDM:  { row: 5, col: 5 },
   LDM:  { row: 5, col: 3 },
-
-  // 수비수
   RB:   { row: 6, col: 7 },
   RWB:  { row: 6, col: 7 },
   RCB:  { row: 6, col: 5 },
-  CB:   { row: 6, col: 4 }, // CB는 한 줄 더 아래
+  CB:   { row: 6, col: 4 },
   LCB:  { row: 6, col: 3 },
   LB:   { row: 6, col: 1 },
   LWB:  { row: 6, col: 1 },
   SW:   { row: 7, col: 4 },
-
-  // 골키퍼
   GK:   { row: 8, col: 4 },
 };
 
-
 const PlayerImage = ({ player }) => {
-  const [imgSrc, setImgSrc] = useState(getPlayerImageUrl(player.spId));
+  const [imgSrc, setImgSrc] = useState("");
+
+ useEffect(() => {
+    if (!player.spId) {
+      setImgSrc('/fallback-player.png');
+      console.log('spId 없음 → fallback');
+    } else {
+      const url = getPlayerImageUrl(player.spId);
+      setImgSrc(url);
+      console.log('spId:', player.spId, 'imgUrl:', url);
+    }
+  }, [player.spId]);
 
   const handleError = () => {
     setImgSrc("/fallback-player.png");
+    console.log("이미지 로딩 실패 → fallback 사용", player.spId);
   };
 
   return (
@@ -71,7 +69,6 @@ const PlayerImage = ({ player }) => {
         onError={handleError}
         draggable={false}
       />
-      {/* 포지션명과 이름을 한 줄에 가로로 이어서 표시 */}
       <div className="flex flex-row items-center justify-center whitespace-nowrap">
         {player.positionName && player.positionName !== "Unknown" && (
           <span className="text-white text-xs font-semibold mr-1">{player.positionName}</span>
@@ -144,8 +141,17 @@ const SquadVisualizer = ({ ouid }) => {
             const season = seasonMeta.find((s) => String(s.seasonId) === String(player.spId).slice(0, 3));
             const position = positionMeta.find((p) => p.spposition === player.spPosition);
 
+            // 콘솔로 선수 정보와 spId를 출력
+            console.log("Squad Player:", {
+              spId: player.spId,
+              name: meta?.name,
+              seasonName: season?.seasonName,
+              positionName: position?.desc || player.spPositionName,
+            });
+
             return {
               ...player,
+              spId: player.spId, // 반드시 포함!
               name: meta?.name,
               seasonName: season?.seasonName,
               positionName: position?.desc || player.spPositionName,

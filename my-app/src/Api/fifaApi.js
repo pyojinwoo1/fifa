@@ -73,8 +73,10 @@ export const fetchMatchHistory = async (ouid, matchType, offset = 0, limit = 10)
 
 // 선수 이미지 URL
 export const getPlayerImageUrl = (spId) => {
-  return `https://fco.dn.nexoncdn.co.kr/live/externalAssets/common/players/p${spId}.png`;
+  if (!spId) return "/fallback-player.png";
+  return `/api/player-image/${spId}`;
 };
+
 
 // 시즌 아이콘 URL (ex: icontm.png)
 export const getSeasonIconUrl = (iconName) => {

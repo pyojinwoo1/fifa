@@ -39,7 +39,7 @@ const PlayerDetail = ({ ouid, userInfo }) => {
             onClick={() => setMatchType(opt.value)}
             className={`text-lg px-4 py-2 rounded-md transition ${matchType === opt.value
                 ? "text-white font-extrabold"
-                : "text-gray-400 font-bold hover:text-cyan-400 bg-transparent shadow-none"
+                : "text-gray-400 font-bold hover:text-green-400 bg-transparent shadow-none"
               }`}
             style={
               matchType === opt.value
